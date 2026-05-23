@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "740018456459",
+    "project_id": "agritrack-8ef35",
+    "storage_bucket": "agritrack-8ef35.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740018456459:android:b499012742f4aace04518e",
+        "android_client_info": {
+          "package_name": "com.jk_08.agritrack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "740018456459-ql07a6khpr83160ke9ea9n83vbrnjfv7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jk_08.agritrack",
+            "certificate_hash": "bf69c0c612889132b0180b97bfb70a9a35423a89"
+          }
+        },
+        {
+          "client_id": "740018456459-c47e4vmglnkvjvjpemcrhvkfk1v09618.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEcrE5ieh9YR6WRMOSusIiDyRPWWSkmQ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "740018456459-c47e4vmglnkvjvjpemcrhvkfk1v09618.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
