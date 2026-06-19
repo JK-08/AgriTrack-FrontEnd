@@ -1,13 +1,16 @@
 import React from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { BottomTabNavigator, ComponentsUsageScreen } from './index';
 import { useTheme } from '../theme';
+import { useAuth } from '../providers/AuthProvider';
 
-const Stack = createNativeStackNavigator();
+import AuthNavigator from './AuthNavigator';
+import OwnerNavigator from './OwnerNavigator';
+import ClientNavigator from './ClientNavigator';
 
 export default function RootNavigator() {
   const { COLORS, isDark } = useTheme();
+  const { isAuthenticated, role, booting } = useAuth();
 
   const navigationTheme = {
     ...(isDark ? DarkTheme : DefaultTheme),
@@ -22,15 +25,23 @@ export default function RootNavigator() {
     },
   };
 
+  if (booting) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
+  const isOwner = role === 'OWNER' || role === 'DRIVER';
+
   return (
     <NavigationContainer theme={navigationTheme}>
-      <Stack.Navigator
-        initialRouteName="Main"
-        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: COLORS.background }, animation: 'fade' }}
-      >
-        <Stack.Screen name="Main"            component={BottomTabNavigator} />
-        <Stack.Screen name="ComponentsUsage" component={ComponentsUsageScreen} />
-      </Stack.Navigator>
+      {!isAuthenticated
+        ? <AuthNavigator />
+        : isOwner
+          ? <OwnerNavigator />
+          : <ClientNavigator />}
     </NavigationContainer>
   );
 }

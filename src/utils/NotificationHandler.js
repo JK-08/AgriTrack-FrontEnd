@@ -7,7 +7,7 @@ import {
 import notifee, { EventType } from '@notifee/react-native';
 import { displayNotification } from './NotificationService';
 
-const TAB_SCREENS = ['Home', 'Portfolio', 'Transactions', 'BuyGold', 'Profile'];
+const TAB_SCREENS = ['Home', 'Customers', 'Work', 'History', 'Settings'];
 
 function handleNavigation(navigationRef, data) {
   if (!data?.screen) {

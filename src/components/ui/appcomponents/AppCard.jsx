@@ -45,7 +45,7 @@ export default function AppCard({
   const bgColor =
     variant === 'gold'     ? COLORS.goldLight
     : variant === 'flat'   ? COLORS.gray50
-    : COLORS.white;
+    : COLORS.card;
 
   const borderWidth = variant === 'outlined' ? 1.5 : 0;
   const borderColor = variant === 'outlined' ? COLORS.border : 'transparent';

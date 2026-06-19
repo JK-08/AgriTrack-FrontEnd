@@ -10,6 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { store, persistor } from './src/store';
 import { ThemeProvider } from './src/providers/ThemeProvider';
 import { LanguageProvider } from './src/providers/LanguageProvider';
+import { AuthProvider } from './src/providers/AuthProvider';
 import { ToastProvider } from './src/components/ui/Toast';
 import RootNavigator from './src/navigation/RootNavigator';
 import useFonts from './src/utils/Fonts';
@@ -36,8 +37,10 @@ export default function App() {
               <ThemeProvider>
                 <LanguageProvider>
                   <ToastProvider>
-                    <StatusBar style="auto" />
-                    <RootNavigator />
+                    <AuthProvider>
+                      <StatusBar style="auto" />
+                      <RootNavigator />
+                    </AuthProvider>
                   </ToastProvider>
                 </LanguageProvider>
               </ThemeProvider>
