@@ -12,9 +12,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundImage": "./assets/icon.png",
+        "monochromeImage": "./assets/icon.png"
       },
       "permissions": [
         "android.permission.CAMERA",
@@ -30,36 +30,66 @@
         "android.permission.USE_FINGERPRINT"
       ],
       "package": "com.jk_08.agritrack",
-      
       "versionCode": 1
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       "expo-sqlite",
       "expo-font",
       "expo-localization",
-      ["expo-camera", { "cameraPermission": "Allow AgriTrack to access your camera." }],
-      ["expo-image-picker", { "photosPermission": "Allow AgriTrack to access your photos." }],
-      ["expo-media-library", { "photosPermission": "Allow AgriTrack to access your photos.", "savePhotosPermission": "Allow AgriTrack to save photos." }],
-      ["expo-location", { "locationAlwaysAndWhenInUsePermission": "Allow AgriTrack to use your location." }],
-      ["expo-notifications", { "icon": "./assets/icon.png" }],
-      ["expo-build-properties", {
-        "android": {
-          "compileSdkVersion": 36,
-          "targetSdkVersion": 36,
-          "buildToolsVersion": "36.0.0"
-        },
-        "ios": {
-          "deploymentTarget": "16.4"
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow AgriTrack to access your camera."
         }
-      }],
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow AgriTrack to access your photos."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow AgriTrack to access your photos.",
+          "savePhotosPermission": "Allow AgriTrack to save photos."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow AgriTrack to use your location."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "buildToolsVersion": "36.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "16.4"
+          }
+        }
+      ],
       "@react-native-google-signin/google-signin",
       "expo-secure-store",
       "expo-local-authentication",
       "expo-task-manager",
-      "expo-background-fetch"
+      "expo-background-fetch",
+      "expo-asset",
+      "expo-sharing"
     ],
     "extra": {
       "eas": {
