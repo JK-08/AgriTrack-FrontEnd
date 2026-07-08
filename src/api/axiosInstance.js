@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_BASE_URL } from '@env';
+const API_BASE_URL = 'https://agritrack-backend-rwsy.onrender.com/api/v1';
 import { AsyncStorageHelper } from '../utils/AsyncStorageHelper';
 import { getOrCreateDeviceId, getDeviceName, getPlatform, getAppVersion } from '../utils/deviceInfo';
 
