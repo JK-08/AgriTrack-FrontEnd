@@ -227,3 +227,7 @@ export const LOCATION = {
   LATEST_BY_DRIVER: (driverId) => `/location/latestByDriver/${driverId}`,
   LATEST_BY_BOOKING:(bookingId) => `/location/latestByBooking/${bookingId}`,
 };
+
+export const HEALTH = {
+  CHECK: '/health',
+};

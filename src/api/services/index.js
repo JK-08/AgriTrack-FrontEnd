@@ -19,3 +19,4 @@ export { expenseService }      from './expenseService';
 export { attendanceService }   from './attendanceService';
 export { payrollService }      from './payrollService';
 export { documentService }     from './documentService';
+export { healthService }       from './healthService';

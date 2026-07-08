@@ -12,6 +12,7 @@ import { ThemeProvider } from './src/providers/ThemeProvider';
 import { LanguageProvider } from './src/providers/LanguageProvider';
 import { AuthProvider } from './src/providers/AuthProvider';
 import { ToastProvider } from './src/components/ui/Toast';
+import ServerBootGate from './src/components/boot/ServerBootGate';
 import RootNavigator from './src/navigation/RootNavigator';
 import useFonts from './src/utils/Fonts';
 
@@ -37,10 +38,12 @@ export default function App() {
               <ThemeProvider>
                 <LanguageProvider>
                   <ToastProvider>
-                    <AuthProvider>
-                      <StatusBar style="auto" />
-                      <RootNavigator />
-                    </AuthProvider>
+                    <ServerBootGate>
+                      <AuthProvider>
+                        <StatusBar style="auto" />
+                        <RootNavigator />
+                      </AuthProvider>
+                    </ServerBootGate>
                   </ToastProvider>
                 </LanguageProvider>
               </ThemeProvider>
