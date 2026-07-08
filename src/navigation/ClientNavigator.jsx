@@ -11,6 +11,9 @@ import RatingScreen from '../screens/client/Rating/RatingScreen';
 import NotificationsScreen from '../screens/owner/Notifications/NotificationsScreen';
 import ChatListScreen from '../screens/shared/ChatList/ChatListScreen';
 import ChatScreen from '../screens/shared/Chat/ChatScreen';
+import LanguageScreen from '../screens/shared/Language/LanguageScreen';
+import ThemeScreen from '../screens/shared/Theme/ThemeScreen';
+import RateAlertScreen from '../screens/shared/RateAlert/RateAlertScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +30,9 @@ export default function ClientNavigator() {
       <Stack.Screen name="Notifications"       component={NotificationsScreen} />
       <Stack.Screen name="ChatList"            component={ChatListScreen} />
       <Stack.Screen name="Chat"                component={ChatScreen} />
+      <Stack.Screen name="Language"            component={LanguageScreen} />
+      <Stack.Screen name="Theme"               component={ThemeScreen} />
+      <Stack.Screen name="RateAlerts"          component={RateAlertScreen} />
     </Stack.Navigator>
   );
 }

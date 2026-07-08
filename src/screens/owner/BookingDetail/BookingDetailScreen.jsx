@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
+import MapView, { Marker } from 'react-native-maps';
 import { useTheme } from '../../../theme';
 import ScreenWrapper from '../../../components/ui/appcomponents/ScreenWrapper';
 import AppHeader from '../../../components/ui/appcomponents/AppHeader';
@@ -8,8 +11,11 @@ import AppCard from '../../../components/ui/appcomponents/AppCard';
 import AppButton from '../../../components/ui/appcomponents/AppButton';
 import AppBadge from '../../../components/ui/appcomponents/AppBadge';
 import { useToast } from '../../../components/ui/Toast';
-import { bookingService } from '../../../api/services';
+import { useAuth } from '../../../providers/AuthProvider';
+import { bookingService, driverService, locationService } from '../../../api/services';
 import { formatDateTime, statusVariant } from '../../../utils/agriHelpers';
+
+const LOCATION_POLL_MS = 15000;
 
 function Line({ label, value }) {
   const { COLORS } = useTheme();
@@ -23,14 +29,56 @@ function Line({ label, value }) {
 
 export default function BookingDetailScreen({ navigation, route }) {
   const toast = useToast();
+  const { ownerId } = useAuth();
   const [booking, setBooking] = useState(route?.params?.booking || {});
   const [busy, setBusy] = useState(false);
+  const [drivers, setDrivers] = useState([]);
+  const [selectedDriverId, setSelectedDriverId] = useState(booking.driverId || '');
+  const [assigning, setAssigning] = useState(false);
+  const [driverLocation, setDriverLocation] = useState(null);
+  const pollRef = useRef(null);
+
+  useEffect(() => {
+    const poll = async () => {
+      if (!booking.bookingId || booking.status !== 'ACCEPTED' || !booking.driverId) return;
+      try {
+        const loc = await locationService.latestByBooking(booking.bookingId);
+        if (loc) setDriverLocation(loc);
+      } catch (e) { /* no location yet */ }
+    };
+    if (booking.status === 'ACCEPTED' && booking.driverId) {
+      poll();
+      pollRef.current = setInterval(poll, LOCATION_POLL_MS);
+    }
+    return () => pollRef.current && clearInterval(pollRef.current);
+  }, [booking.bookingId, booking.status, booking.driverId]);
+
+  const loadDrivers = useCallback(async () => {
+    if (!ownerId) return;
+    try {
+      const r = await driverService.byOwner(ownerId);
+      setDrivers(Array.isArray(r) ? r : []);
+    } catch (e) { setDrivers([]); }
+  }, [ownerId]);
+
+  useFocusEffect(useCallback(() => { loadDrivers(); }, [loadDrivers]));
 
   const act = async (fn, status) => {
     setBusy(true);
     try { await fn(booking.bookingId); setBooking({ ...booking, status }); toast?.success?.(status); }
     catch (e) { toast?.error?.(e?.message || 'Action failed'); }
     finally { setBusy(false); }
+  };
+
+  const onAssignDriver = async () => {
+    if (!selectedDriverId) { toast?.error?.('Select a driver'); return; }
+    setAssigning(true);
+    try {
+      const updated = await bookingService.assignDriver(booking.bookingId, selectedDriverId, booking.tractorId);
+      setBooking(updated);
+      toast?.success?.('Driver assigned');
+    } catch (e) { toast?.error?.(e?.message || 'Could not assign driver'); }
+    finally { setAssigning(false); }
   };
 
   const pending = booking.status === 'PENDING';
@@ -59,7 +107,40 @@ export default function BookingDetailScreen({ navigation, route }) {
           </View>
         )}
         {accepted && (
-          <AppButton label="Mark Completed" leftIcon="checkmark-done" onPress={() => act(bookingService.complete, 'COMPLETED')} loading={busy} style={{ marginTop: 18 }} />
+          <>
+            <AppCard style={{ marginTop: 18 }}>
+              <AppText variant="label" style={{ marginBottom: 8 }}>Assign Driver</AppText>
+              <View style={{ borderWidth: 1, borderRadius: 10, overflow: 'hidden' }}>
+                <Picker selectedValue={selectedDriverId} onValueChange={setSelectedDriverId}>
+                  <Picker.Item label="Select driver..." value="" />
+                  {drivers.map((d) => (
+                    <Picker.Item key={d.driverId} label={`Driver #${d.driverId}${d.isAvailable ? '' : ' (busy)'}`} value={d.driverId} />
+                  ))}
+                </Picker>
+              </View>
+              <AppButton label={booking.driverId ? 'Reassign Driver' : 'Assign Driver'} leftIcon="person-add-outline"
+                onPress={onAssignDriver} loading={assigning} style={{ marginTop: 10 }} />
+            </AppCard>
+
+            {!!driverLocation && (
+              <View style={{ marginTop: 14 }}>
+                <AppText variant="label" style={{ marginBottom: 8 }}>Driver's Live Location</AppText>
+                <MapView
+                  style={styles.map}
+                  region={{
+                    latitude: driverLocation.latitude,
+                    longitude: driverLocation.longitude,
+                    latitudeDelta: 0.03,
+                    longitudeDelta: 0.03,
+                  }}
+                >
+                  <Marker coordinate={{ latitude: driverLocation.latitude, longitude: driverLocation.longitude }} title="Driver" />
+                </MapView>
+              </View>
+            )}
+
+            <AppButton label="Mark Completed" leftIcon="checkmark-done" onPress={() => act(bookingService.complete, 'COMPLETED')} loading={busy} style={{ marginTop: 12 }} />
+          </>
         )}
         <AppButton label="Message Customer" variant="outline" leftIcon="chatbubble-outline" style={{ marginTop: 12 }}
           onPress={() => navigation.navigate('Chat', { ownerId: booking.ownerId, clientId: booking.clientId })} />
@@ -67,3 +148,7 @@ export default function BookingDetailScreen({ navigation, route }) {
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  map: { width: '100%', height: 200, borderRadius: 14, overflow: 'hidden' },
+});

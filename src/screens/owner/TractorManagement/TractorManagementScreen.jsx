@@ -53,9 +53,14 @@ export default function TractorManagementScreen({ navigation }) {
                 <AppText variant="caption" color={COLORS.textTertiary}>
                   {item.hourlyRate ? `${formatCurrency(item.hourlyRate)}/hr` : ''}
                 </AppText>
-                <TouchableOpacity onPress={() => navigation.navigate('MaintenanceLog', { tractor: item })}>
-                  <AppText variant="bodySmall" color={COLORS.primary}>Maintenance ›</AppText>
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity onPress={() => navigation.navigate('TractorDocuments', { tractor: item })} style={{ marginRight: 16 }}>
+                    <AppText variant="bodySmall" color={COLORS.primary}>Documents ›</AppText>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => navigation.navigate('MaintenanceLog', { tractor: item })}>
+                    <AppText variant="bodySmall" color={COLORS.primary}>Maintenance ›</AppText>
+                  </TouchableOpacity>
+                </View>
               </View>
             </AppCard>
           )}

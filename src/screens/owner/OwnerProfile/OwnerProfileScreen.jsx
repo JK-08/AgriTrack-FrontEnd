@@ -7,9 +7,7 @@ import AppHeader from '../../../components/ui/appcomponents/AppHeader';
 import AppText from '../../../components/ui/appcomponents/AppText';
 import AppCard from '../../../components/ui/appcomponents/AppCard';
 import AppButton from '../../../components/ui/appcomponents/AppButton';
-import AppSwitch from '../../../components/ui/appcomponents/AppSwitch';
 import { useAuth } from '../../../providers/AuthProvider';
-import { useLanguage } from '../../../providers/LanguageProvider';
 
 function Row({ icon, label, onPress, right, last }) {
   const { COLORS } = useTheme();
@@ -26,9 +24,8 @@ function Row({ icon, label, onPress, right, last }) {
 }
 
 export default function OwnerProfileScreen({ navigation }) {
-  const { COLORS, isDark, toggleTheme } = useTheme();
+  const { COLORS } = useTheme();
   const { user, logout } = useAuth();
-  const { language, setLanguage } = useLanguage();
 
   return (
     <ScreenWrapper scroll paddingHorizontal={0}
@@ -50,18 +47,19 @@ export default function OwnerProfileScreen({ navigation }) {
           <Row icon="people-outline" label="Customers" onPress={() => navigation.navigate('OwnerTabs', { screen: 'Customers' })} />
           <Row icon="pricetags-outline" label="Rate Management" onPress={() => navigation.navigate('Rates')} />
           <Row icon="construct-outline" label="My Tractors" onPress={() => navigation.navigate('TractorManagement')} />
+          <Row icon="person-outline" label="Drivers" onPress={() => navigation.navigate('DriverList')} />
           <Row icon="receipt-outline" label="Invoices" onPress={() => navigation.navigate('InvoiceList')} />
           <Row icon="cash-outline" label="Payments" onPress={() => navigation.navigate('PaymentTracking')} />
-          <Row icon="bar-chart-outline" label="Reports" onPress={() => navigation.navigate('Reports')} last />
+          <Row icon="bar-chart-outline" label="Reports" onPress={() => navigation.navigate('Reports')} />
+          <Row icon="trending-up-outline" label="Rate Alerts" onPress={() => navigation.navigate('RateAlerts')} last />
         </AppCard>
 
         <AppText variant="label" color={COLORS.textSecondary} style={{ marginTop: 18, marginBottom: 8 }}>GENERAL</AppText>
         <AppCard padding="none">
           <Row icon="chatbubbles-outline" label="Messages" onPress={() => navigation.navigate('ChatList')} />
           <Row icon="notifications-outline" label="Notifications" onPress={() => navigation.navigate('Notifications')} />
-          <Row icon="moon-outline" label="Dark Mode" right={<AppSwitch value={isDark} onValueChange={toggleTheme} />} />
-          <Row icon="language-outline" label={`Language · ${language === 'ta' ? 'தமிழ்' : 'English'}`}
-            onPress={() => setLanguage(language === 'ta' ? 'en' : 'ta')} last />
+          <Row icon="moon-outline" label="Theme" onPress={() => navigation.navigate('Theme')} />
+          <Row icon="language-outline" label="Language" onPress={() => navigation.navigate('Language')} last />
         </AppCard>
 
         <AppButton label="Logout" variant="danger" leftIcon="log-out-outline" onPress={logout} style={{ marginTop: 24 }} />

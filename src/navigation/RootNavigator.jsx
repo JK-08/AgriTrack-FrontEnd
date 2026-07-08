@@ -7,6 +7,7 @@ import { useAuth } from '../providers/AuthProvider';
 import AuthNavigator from './AuthNavigator';
 import OwnerNavigator from './OwnerNavigator';
 import ClientNavigator from './ClientNavigator';
+import DriverNavigator from './DriverNavigator';
 
 export default function RootNavigator() {
   const { COLORS, isDark } = useTheme();
@@ -33,7 +34,8 @@ export default function RootNavigator() {
     );
   }
 
-  const isOwner = role === 'OWNER' || role === 'DRIVER';
+  const isOwner  = role === 'OWNER';
+  const isDriver = role === 'DRIVER';
 
   return (
     <NavigationContainer theme={navigationTheme}>
@@ -41,7 +43,9 @@ export default function RootNavigator() {
         ? <AuthNavigator />
         : isOwner
           ? <OwnerNavigator />
-          : <ClientNavigator />}
+          : isDriver
+            ? <DriverNavigator />
+            : <ClientNavigator />}
     </NavigationContainer>
   );
 }

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { useTheme } from '../../../theme';
 import ScreenWrapper from '../../../components/ui/appcomponents/ScreenWrapper';
 import AppHeader from '../../../components/ui/appcomponents/AppHeader';
@@ -8,16 +9,36 @@ import AppCard from '../../../components/ui/appcomponents/AppCard';
 import AppButton from '../../../components/ui/appcomponents/AppButton';
 import AppBadge from '../../../components/ui/appcomponents/AppBadge';
 import { useToast } from '../../../components/ui/Toast';
-import { bookingService } from '../../../api/services';
+import { bookingService, locationService } from '../../../api/services';
 import { formatDateTime, statusVariant } from '../../../utils/agriHelpers';
 
 const STEPS = ['PENDING', 'ACCEPTED', 'COMPLETED'];
+const LOCATION_POLL_MS = 15000;
 
 export default function BookingStatusScreen({ navigation, route }) {
   const { COLORS } = useTheme();
   const toast = useToast();
   const [booking, setBooking] = useState(route?.params?.booking || {});
+  const [driverLocation, setDriverLocation] = useState(null);
+  const pollRef = useRef(null);
   const stepIndex = STEPS.indexOf((booking.status || 'PENDING').toUpperCase());
+
+  // While the booking is accepted (i.e. a driver may be on the way / working),
+  // poll for the driver's last known GPS position and show it on a small map.
+  useEffect(() => {
+    const poll = async () => {
+      if (!booking.bookingId || booking.status !== 'ACCEPTED') return;
+      try {
+        const loc = await locationService.latestByBooking(booking.bookingId);
+        if (loc) setDriverLocation(loc);
+      } catch (e) { /* no location yet */ }
+    };
+    if (booking.status === 'ACCEPTED') {
+      poll();
+      pollRef.current = setInterval(poll, LOCATION_POLL_MS);
+    }
+    return () => pollRef.current && clearInterval(pollRef.current);
+  }, [booking.bookingId, booking.status]);
 
   const cancel = async () => {
     try { await bookingService.cancel(booking.bookingId); setBooking({ ...booking, status: 'CANCELLED' }); toast?.success?.('Cancelled'); }
@@ -49,6 +70,23 @@ export default function BookingStatusScreen({ navigation, route }) {
           <AppText variant="caption" color={COLORS.textSecondary}>Requested {formatDateTime(booking.requestedDate)}</AppText>
         </AppCard>
 
+        {!!driverLocation && (
+          <View style={{ marginTop: 14 }}>
+            <AppText variant="label" style={{ marginBottom: 8 }}>Driver's Live Location</AppText>
+            <MapView
+              style={styles.map}
+              region={{
+                latitude: driverLocation.latitude,
+                longitude: driverLocation.longitude,
+                latitudeDelta: 0.03,
+                longitudeDelta: 0.03,
+              }}
+            >
+              <Marker coordinate={{ latitude: driverLocation.latitude, longitude: driverLocation.longitude }} title="Driver" />
+            </MapView>
+          </View>
+        )}
+
         {booking.status === 'COMPLETED' && (
           <AppButton label="Rate & Review" leftIcon="star" style={{ marginTop: 18 }}
             onPress={() => navigation.navigate('Rating', { booking })} />
@@ -62,3 +100,7 @@ export default function BookingStatusScreen({ navigation, route }) {
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  map: { width: '100%', height: 200, borderRadius: 14, overflow: 'hidden' },
+});

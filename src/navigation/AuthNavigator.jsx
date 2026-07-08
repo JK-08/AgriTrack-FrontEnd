@@ -8,6 +8,7 @@ import RegisterScreen from '../screens/auth/Register/RegisterScreen';
 import RoleSelectionScreen from '../screens/auth/RoleSelection/RoleSelectionScreen';
 import ForgotPasswordScreen from '../screens/auth/ForgotPassword/ForgotPasswordScreen';
 import OTPVerificationScreen from '../screens/auth/OTPVerification/OTPVerificationScreen';
+import ResetPasswordScreen from '../screens/auth/ResetPassword/ResetPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,7 @@ export default function AuthNavigator() {
       <Stack.Screen name="Register"         component={RegisterScreen} />
       <Stack.Screen name="ForgotPassword"   component={ForgotPasswordScreen} />
       <Stack.Screen name="OTPVerification"  component={OTPVerificationScreen} />
+      <Stack.Screen name="ResetPassword"    component={ResetPasswordScreen} />
     </Stack.Navigator>
   );
 }

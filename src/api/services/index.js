@@ -1,4 +1,5 @@
 export { authService }        from './authService';
+export { mpinService }        from './mpinService';
 export { customerService }    from './customerService';
 export { tractorService }     from './tractorService';
 export { rateService }        from './rateService';
@@ -10,3 +11,11 @@ export { maintenanceService } from './maintenanceService';
 export { chatService }        from './chatService';
 export { ratingService }      from './ratingService';
 export { reportService }      from './reportService';
+export { driverService }      from './driverService';
+export { assignmentService }  from './assignmentService';
+export { notificationService } from './notificationService';
+export { locationService }     from './locationService';
+export { expenseService }      from './expenseService';
+export { attendanceService }   from './attendanceService';
+export { payrollService }      from './payrollService';
+export { documentService }     from './documentService';

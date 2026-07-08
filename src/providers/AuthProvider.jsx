@@ -2,17 +2,23 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authService } from '../api/services';
 import { AsyncStorageHelper } from '../utils/AsyncStorageHelper';
+import { registerSessionExpiredHandler } from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
 
 /**
- * Holds the authenticated user, role and token for the whole app.
- * Backend login returns: { token, role, name, userId }.
+ * Holds the authenticated user, role and tokens for the whole app.
+ * Backend login returns: { token, role, name, userId, refreshToken, expiresIn, sessionId }.
+ * The access token is short-lived (15 min) and refreshed automatically by
+ * the axios interceptor — the user is never forced back to the login
+ * screen just because it expired. Only a dead/revoked refresh token (or an
+ * explicit logout) ends the session.
  */
 export function AuthProvider({ children }) {
-  const [user, setUser]       = useState(null);   // { userId, name, role, token, ... }
-  const [booting, setBooting] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser]                 = useState(null);   // { userId, name, role, token, refreshToken, ... }
+  const [booting, setBooting]           = useState(true);
+  const [loading, setLoading]           = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   // ---- restore session on cold start ----
   useEffect(() => {
@@ -28,11 +34,22 @@ export function AuthProvider({ children }) {
     })();
   }, []);
 
+  // ---- react to a refresh-token that the backend has rejected ----
+  useEffect(() => {
+    registerSessionExpiredHandler(() => {
+      setUser(null);
+      setSessionExpired(true);
+    });
+    return () => registerSessionExpiredHandler(null);
+  }, []);
+
   const persist = useCallback(async (u) => {
     setUser(u);
+    setSessionExpired(false);
     await AsyncStorage.setItem('@user', JSON.stringify(u));
-    if (u?.token)  await AsyncStorage.setItem('@auth_token', u.token);
-    if (u?.userId) await AsyncStorage.setItem('@user_id', String(u.userId));
+    if (u?.token)        await AsyncStorage.setItem('@auth_token', u.token);
+    if (u?.refreshToken) await AsyncStorageHelper.setRefreshToken(u.refreshToken);
+    if (u?.userId)       await AsyncStorage.setItem('@user_id', String(u.userId));
   }, []);
 
   const login = useCallback(async (username, password, role) => {
@@ -40,10 +57,13 @@ export function AuthProvider({ children }) {
     try {
       const res = await authService.login(username, password, role);
       const u = {
-        userId: res.userId,
-        name:   res.name,
-        role:   res.role,
-        token:  res.token,
+        userId:       res.userId,
+        name:         res.name,
+        role:         res.role,
+        token:        res.token,
+        refreshToken: res.refreshToken,
+        expiresIn:    res.expiresIn,
+        sessionId:    res.sessionId,
         username,
       };
       await persist(u);
@@ -62,10 +82,31 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // Logs out only this device — the refresh token is revoked server-side so
+  // it can't be used again even if it leaks.
   const logout = useCallback(async () => {
+    try {
+      const refreshToken = await AsyncStorageHelper.getRefreshToken();
+      if (refreshToken) await authService.logout(refreshToken);
+    } catch (e) {
+      // best-effort — still clear local session even if the network call fails
+    }
     setUser(null);
+    setSessionExpired(false);
     await AsyncStorageHelper.clearSession();
     await AsyncStorage.multiRemove(['@user', '@auth_token', '@user_id']);
+  }, []);
+
+  // Logs out every device the user is currently signed in on.
+  const logoutAllDevices = useCallback(async () => {
+    try {
+      await authService.logoutAll();
+    } finally {
+      setUser(null);
+      setSessionExpired(false);
+      await AsyncStorageHelper.clearSession();
+      await AsyncStorage.multiRemove(['@user', '@auth_token', '@user_id']);
+    }
   }, []);
 
   const value = {
@@ -73,11 +114,13 @@ export function AuthProvider({ children }) {
     role:    user?.role ?? null,
     ownerId: user?.userId ?? null,
     isAuthenticated: !!user?.token,
+    sessionExpired,
     booting,
     loading,
     login,
     register,
     logout,
+    logoutAllDevices,
     setUser: persist,
   };
 

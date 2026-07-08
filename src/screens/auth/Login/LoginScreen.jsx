@@ -38,7 +38,7 @@ export default function LoginScreen({ navigation, route }) {
         <View style={{ marginTop: 24, marginBottom: 24 }}>
           <AppText variant="h1">Welcome back</AppText>
           <AppText variant="body" color={COLORS.textSecondary}>
-            Sign in as {role === 'OWNER' ? 'Tractor Owner' : 'Farmer'}
+            Sign in as {role === 'OWNER' ? 'Tractor Owner' : role === 'DRIVER' ? 'Driver' : 'Farmer'}
           </AppText>
         </View>
 

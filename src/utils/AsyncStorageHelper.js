@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEYS = {
   TOKEN:          '@auth_token',
+  REFRESH_TOKEN:  '@refresh_token',
   USER:           '@user',
   USER_ID:        '@user_id',
   CONTACT:        '@contact_number',
@@ -21,6 +22,7 @@ const KEYS = {
 const saveUserSession = async (user) => {
   const pairs = [[KEYS.USER, JSON.stringify(user)]];
   if (user.token)              pairs.push([KEYS.TOKEN,          user.token]);
+  if (user.refreshToken)       pairs.push([KEYS.REFRESH_TOKEN,  user.refreshToken]);
   if (user.id)                 pairs.push([KEYS.USER_ID,        String(user.id)]);
   if (user.contactNumber)      pairs.push([KEYS.CONTACT,        user.contactNumber]);
   if (user.username)           pairs.push([KEYS.USERNAME,       user.username]);
@@ -35,6 +37,9 @@ const saveUserSession = async (user) => {
 
 const getUser         = async () => { const raw = await AsyncStorage.getItem(KEYS.USER); return raw ? JSON.parse(raw) : null; };
 const getToken         = () => AsyncStorage.getItem(KEYS.TOKEN);
+const getRefreshToken  = () => AsyncStorage.getItem(KEYS.REFRESH_TOKEN);
+const setToken         = (token) => AsyncStorage.setItem(KEYS.TOKEN, token);
+const setRefreshToken  = (token) => AsyncStorage.setItem(KEYS.REFRESH_TOKEN, token);
 const getUserId        = () => AsyncStorage.getItem(KEYS.USER_ID);
 const getContactNumber = () => AsyncStorage.getItem(KEYS.CONTACT);
 const getUsername      = () => AsyncStorage.getItem(KEYS.USERNAME);
@@ -54,7 +59,7 @@ const getDeviceId      = () => AsyncStorage.getItem(KEYS.DEVICE_ID);
 
 const clearSession = () =>
   AsyncStorage.multiRemove([
-    KEYS.TOKEN, KEYS.USER, KEYS.USER_ID, KEYS.CONTACT, KEYS.USERNAME,
+    KEYS.TOKEN, KEYS.REFRESH_TOKEN, KEYS.USER, KEYS.USER_ID, KEYS.CONTACT, KEYS.USERNAME,
     KEYS.EMAIL, KEYS.REFERRAL_CODE, KEYS.REFERRAL_LINK, KEYS.PLAYSTORE_LINK,
     KEYS.WHATSAPP_LINK, KEYS.USED_REFERRAL,
   ]);
@@ -62,7 +67,8 @@ const clearSession = () =>
 const clearAll = () => AsyncStorage.multiRemove(Object.values(KEYS));
 
 export const AsyncStorageHelper = {
-  KEYS, saveUserSession, getUser, getToken, getUserId, getContactNumber,
+  KEYS, saveUserSession, getUser, getToken, getRefreshToken, setToken, setRefreshToken,
+  getUserId, getContactNumber,
   getUsername, getEmail, getReferralCode, getReferralLink, getPlayStoreLink,
   getWhatsappLink, isMpinSet, isOnboarded, setMpinSet, setOnboarded,
   setFcmToken, getFcmToken, setDeviceId, getDeviceId, clearSession, clearAll,

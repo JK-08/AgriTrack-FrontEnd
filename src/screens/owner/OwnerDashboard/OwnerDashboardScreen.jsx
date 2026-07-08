@@ -20,6 +20,8 @@ const QUICK = [
   { label: 'Tractors',    icon: 'construct',     to: 'TractorManagement' },
   { label: 'Bookings',    icon: 'calendar',      to: 'BookingRequests' },
   { label: 'Payments',    icon: 'cash',          to: 'PaymentTracking' },
+  { label: 'Expenses',    icon: 'wallet',        to: 'ExpenseList' },
+  { label: 'Profit/Loss', icon: 'stats-chart',   to: 'ProfitLoss' },
   { label: 'Reports',     icon: 'bar-chart',     to: 'Reports' },
 ];
 
@@ -60,6 +62,22 @@ export default function OwnerDashboardScreen({ navigation }) {
       }
     >
       <View style={{ paddingHorizontal: SIZES.padding.container }}>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() => navigation.navigate('FleetDashboard')}
+          style={[styles.heroBanner, { backgroundColor: COLORS.primary, ...SHADOWS.md }]}
+        >
+          <View style={{ flex: 1 }}>
+            <AppText variant="h5" color={COLORS.white}>Fleet Dashboard</AppText>
+            <AppText variant="caption" color={COLORS.white} style={{ opacity: 0.85, marginTop: 2 }}>
+              Live KPIs, utilization, revenue trends & more
+            </AppText>
+          </View>
+          <View style={[styles.heroIcon, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
+            <Ionicons name="speedometer" size={22} color={COLORS.white} />
+          </View>
+        </TouchableOpacity>
+
         <View style={styles.row}>
           <StatCard icon="cash" label="Total Revenue" tint={COLORS.success}
             value={formatCurrency(summary?.totalRevenue)} onPress={() => navigation.navigate('PaymentTracking')} />
@@ -104,9 +122,11 @@ export default function OwnerDashboardScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  row:      { flexDirection: 'row' },
-  grid:     { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6 },
-  tile:     { width: '22%', margin: '1.5%', paddingVertical: 14, alignItems: 'center' },
-  tileIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  alert:    { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 14, marginTop: 18 },
+  row:        { flexDirection: 'row' },
+  grid:       { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6 },
+  tile:       { width: '22%', margin: '1.5%', paddingVertical: 14, alignItems: 'center' },
+  tileIcon:   { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+  alert:      { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 14, marginTop: 18 },
+  heroBanner: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 18, marginBottom: 14 },
+  heroIcon:   { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
 });

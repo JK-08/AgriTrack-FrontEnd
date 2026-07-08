@@ -8,6 +8,7 @@ import AppText from '../../../components/ui/appcomponents/AppText';
 const ROLES = [
   { role: 'OWNER',    icon: 'construct',   title: 'Tractor Owner', text: 'Manage customers, work, rates & invoices' },
   { role: 'CUSTOMER', icon: 'leaf',        title: 'Farmer',        text: 'Find tractors, book services & pay' },
+  { role: 'DRIVER',   icon: 'car-sport',   title: 'Driver',        text: 'View assigned jobs & track your work' },
 ];
 
 export default function RoleSelectionScreen({ navigation }) {

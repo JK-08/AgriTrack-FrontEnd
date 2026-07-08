@@ -10,6 +10,7 @@ export const workService = {
   getAll:     ()                   => callApi({ method: 'get',  url: WORK.GET_ALL }),
   byOwner:    (ownerId)            => callApi({ method: 'get',  url: WORK.BY_OWNER(ownerId) }),
   byCustomer: (customerId)         => callApi({ method: 'get',  url: WORK.BY_CUSTOMER(customerId) }),
+  byDriver:   (driverId)           => callApi({ method: 'get',  url: WORK.BY_DRIVER(driverId) }),
   getById:    (id)                 => callApi({ method: 'get',  url: WORK.GET_BY_ID(id) }),
   remove:     (id)                 => callApi({ method: 'delete', url: WORK.DELETE(id) }),
 };
